@@ -6,4 +6,4 @@ Homebrew casks for [Afterhours](https://github.com/PunGrumpy/afterhours), a menu
 brew install --cask pungrumpy/tap/afterhours
 ```
 
-The Afterhours release workflow updates `Casks/afterhours.rb` with each new version.
+A workflow checks for a new Afterhours release every hour and updates `Casks/afterhours.rb` on its own.

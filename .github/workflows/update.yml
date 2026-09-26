@@ -1,0 +1,43 @@
+name: Update casks
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-casks
+
+jobs:
+  afterhours:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Point the cask at the latest release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag="$(gh release view --repo PunGrumpy/afterhours --json tagName -q .tagName)"
+          version="${tag##*@}"
+          current="$(sed -n 's/^  version "\(.*\)"$/\1/p' Casks/afterhours.rb)"
+          if [[ "$version" == "$current" ]]; then
+            echo "The cask is already at $version."
+            exit 0
+          fi
+          if ! sums="$(gh release download "$tag" --repo PunGrumpy/afterhours --pattern SHA256SUMS --output -)"; then
+            echo "::notice::$tag has no SHA256SUMS yet, so the next run will try again."
+            exit 0
+          fi
+          sha="$(awk -v file="Afterhours-$version.dmg" '$2 == file { print $1 }' <<<"$sums")"
+          if [[ -z "$sha" ]]; then
+            echo "::notice::SHA256SUMS in $tag doesn't list Afterhours-$version.dmg yet, so the next run will try again."
+            exit 0
+          fi
+          sed -i -e "s/^  version \".*\"$/  version \"$version\"/" -e "s/^  sha256 \".*\"$/  sha256 \"$sha\"/" Casks/afterhours.rb
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -am "Update Afterhours to $version"
+          git push
