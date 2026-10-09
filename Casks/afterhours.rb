@@ -1,6 +1,6 @@
 cask "afterhours" do
-  version "0.2.4"
-  sha256 "cd17a1a5363a60838786c1655986d1732fede23cf2813b4905bb339ef8f605b5"
+  version "0.2.5"
+  sha256 "eeaebc5b721f99ccd2d33be88fa64b7d997c4a560938ab788700410185ec1f71"
 
   url "https://github.com/PunGrumpy/afterhours/releases/download/%40afterhours/macos%40#{version}/Afterhours-#{version}.dmg"
   name "Afterhours"
