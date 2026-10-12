@@ -55,7 +55,7 @@ jobs:
             echo "::notice::Peony has no release yet, so the next run will try again."
             exit 0
           fi
-          version="${tag#v}"
+          version="${tag##*@}"
           if ! sums="$(gh release download "$tag" --repo PunGrumpy/peony --pattern SHA256SUMS --output -)"; then
             echo "::notice::$tag has no SHA256SUMS yet, so the next run will try again."
             exit 0
