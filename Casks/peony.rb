@@ -1,6 +1,6 @@
 cask "peony" do
-  version "0.1.1"
-  sha256 "7da52516b7429455aa82c2b603ee2dfb99c387c8f9a77612664a2c0fdf88645e"
+  version "0.1.2"
+  sha256 "84bf4505d5913054dfa4d3fd8f752099dd915e4588768b5c665f470ec0c81bd1"
 
   url "https://github.com/PunGrumpy/peony/releases/download/%40peony/macos%40#{version}/Peony-#{version}.dmg"
   name "Peony"
