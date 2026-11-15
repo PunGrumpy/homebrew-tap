@@ -65,8 +65,19 @@ jobs:
             echo "::notice::SHA256SUMS in $tag doesn't list Peony-$version.dmg yet, so the next run will try again."
             exit 0
           fi
-          # The checksum is compared too, since a release can be rebuilt under the same version.
-          sed -i -e "s/^  version \".*\"$/  version \"$version\"/" -e "s/^  sha256 \".*\"$/  sha256 \"$sha\"/" Casks/peony.rb
+          # Peony's release publishes its whole cask, so stanzas added there, such as binary, reach the tap.
+          # A release published before Peony uploaded peony.rb only moves the version and checksum.
+          if cask="$(gh release download "$tag" --repo PunGrumpy/peony --pattern peony.rb --output - 2>/dev/null)"; then
+            if ! grep -qxF "  version \"$version\"" <<<"$cask" || ! grep -qxF "  sha256 \"$sha\"" <<<"$cask"; then
+              echo "::error::peony.rb in $tag doesn't match Peony-$version.dmg in SHA256SUMS."
+              exit 1
+            fi
+            printf '%s\n' "$cask" > Casks/peony.rb
+            ruby -c Casks/peony.rb
+          else
+            # The checksum is compared too, since a release can be rebuilt under the same version.
+            sed -i -e "s/^  version \".*\"$/  version \"$version\"/" -e "s/^  sha256 \".*\"$/  sha256 \"$sha\"/" Casks/peony.rb
+          fi
           if git diff --quiet; then
             echo "The cask is already at $version."
             exit 0
